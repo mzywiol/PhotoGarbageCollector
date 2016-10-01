@@ -27,25 +27,36 @@ package object similar {
   /** Returns the alpha component. */
   def alpha(c: ARGB): Int = (0xff000000 & c) >>> 24
 
-  def quad(c: ARGB): Quad = (alpha(c), red(c), green(c), blue(c))
+  object ARGB {
+    def apply(a: Int, r: Int, g: Int, b: Int): ARGB = {
+      ((a & 0xff) << 24) | ((r & 0xff) << 16) | ((g & 0xff) << 8) | (b & 0xff)
+    }
 
-  /** Used to create an RGBA value from separate components. */
-  def rgba(a: Int, r: Int, g: Int, b: Int): ARGB = {
-    ((a & 0xff) << 24) | ((r & 0xff) << 16) | ((g & 0xff) << 8) | (b & 0xff)
-  }
-
-  def rgba(quad: Quad): ARGB = {
-    rgba(quad._1, quad._2, quad._3, quad._4)
+    def apply(quad: Quad): ARGB = {
+      apply(quad._1, quad._2, quad._3, quad._4)
+    }
   }
 
   type Quad = (Int, Int, Int, Int)
-  val quadZero = (0,0,0,0)
-  def quadOp(o: (Int, Int) => Int)(a: Quad, b: Quad): Quad = (o(a._1, b._1), o(a._2, b._2), o(a._3, b._3), o(a._4, b._4))
-  def sum(a: Quad, b: Quad): Quad = quadOp((x, y) => x + y)(a, b)
-  def absDiff(a: Quad, b: Quad): Quad = quadOp((x, y) => Math.abs(x - y))(a, b)
-  def div(a: Quad, by: Int): Quad = (a._1 / by, a._2 / by, a._3 / by, a._4 / by)
-  def quadToList(a: Quad): Iterable[Int] = Vector(a._1, a._2, a._3, a._4)
-  def sum(a: Quad) = a._1 + a._2 + a._3 + a._4
+
+  object Quad {
+
+    def apply(argb: ARGB) = (alpha(argb), red(argb), green(argb), blue(argb))
+
+    val zero = (0, 0, 0, 0)
+
+    private def quadOperation(o: (Int, Int) => Int)(a: Quad, b: Quad): Quad =
+      (o(a._1, b._1), o(a._2, b._2), o(a._3, b._3), o(a._4, b._4))
+
+    def add(a: Quad, b: Quad): Quad = quadOperation((x, y) => x + y)(a, b)
+    def absDiff(a: Quad, b: Quad): Quad = quadOperation((x, y) => Math.abs(x - y))(a, b)
+
+    def div(a: Quad, by: Int): Quad = (a._1 / by, a._2 / by, a._3 / by, a._4 / by)
+
+    def sum(a: Quad) = a._1 + a._2 + a._3 + a._4
+
+    def toList(a: Quad): Iterable[Int] = Vector(a._1, a._2, a._3, a._4)
+  }
 
   /** Restricts the integer into the specified range, end exclusive. */
   def clamp(v: Int, min: Int, max: Int): Int = {
@@ -81,7 +92,7 @@ package object similar {
       }
       row += 1
     }
-    rgba(ca / pixels, cr / pixels, cg / pixels, cb / pixels)
+    ARGB(ca / pixels, cr / pixels, cg / pixels, cb / pixels)
   }
 
   /**

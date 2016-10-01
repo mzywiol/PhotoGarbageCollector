@@ -2,9 +2,6 @@ package xz.similar
 
 import java.io.File
 
-/**
-  * Created by eXistenZ on 2016-09-14.
-  */
 object DirectoryRunner {
 
   val threads = 4
@@ -13,19 +10,6 @@ object DirectoryRunner {
   val logging = true
 
   def main(args: Array[String]): Unit = {
-
-    val img1 = new Img(2, 1)
-    img1.update(0, 0, rgba(0, 0, 0, 100))
-    img1.update(1, 0, rgba(0, 0, 50, 0))
-    val img2 = new Img(2, 1)
-    img2.update(0, 0, rgba(0, 0, 0, 0))
-    img2.update(1, 0, rgba(0, 0, 0, 0))
-
-    println(absDiff(quad(img1(0,0)), quad(img2(0,0))))
-    println(absDiff(quad(img1(1,0)), quad(img2(1,0))))
-
-
-    sys.exit()
 
     if (args.length < 1) throw new IllegalArgumentException("No directory provided")
 
@@ -98,7 +82,7 @@ object DirectoryRunner {
     Some((for {
       x <- 0 until one.width
       y <- 0 until one.height
-    } yield absDiff(quad(one(x, y)), quad(two(x, y)))).foldLeft(0)(_ + sum(_)) / pixels)
+    } yield Quad.absDiff(Quad(one(x, y)), Quad(two(x, y)))).foldLeft(0)(_ + Quad.sum(_)) / pixels)
   }
 
   def diffByChannels(one: Img, two: Img): Option[Int] = {
@@ -106,9 +90,9 @@ object DirectoryRunner {
       None
 
     val pixels = one.height * one.width
-    Some(quadToList(div((for {
+    Some(Quad.toList(Quad.div((for {
       x <- 0 until one.width
       y <- 0 until one.height
-    } yield absDiff(quad(one(x, y)), quad(two(x, y)))).foldLeft(quadZero)(sum), pixels)).max)
+    } yield Quad.absDiff(Quad(one(x, y)), Quad(two(x, y)))).foldLeft(Quad.zero)(Quad.add), pixels)).max)
   }
 }
