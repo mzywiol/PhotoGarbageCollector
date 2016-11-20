@@ -60,7 +60,7 @@ class PhotoCanvas extends JComponent {
     val width = image.width
     val height = image.height
     val bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
-    for (x <- 0 until width; y <- 0 until height) bufferedImage.setRGB(x, y, image(x, y).c)
+    for (x <- 0 until width; y <- 0 until height) bufferedImage.setRGB(x, y, image(x, y))
 
     gcan.drawImage(bufferedImage, 0, 0, null)
   }

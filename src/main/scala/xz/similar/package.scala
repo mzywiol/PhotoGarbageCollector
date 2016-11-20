@@ -12,6 +12,8 @@ package object similar {
     ret
   }
 
+  def square(base: Int): Int = base * base
+
   /** The value of every pixel is represented as a 32 bit integer. */
   type ARGB = Int
 
@@ -50,6 +52,7 @@ package object similar {
 
     def add(a: Quad, b: Quad): Quad = quadOperation((x, y) => x + y)(a, b)
     def absDiff(a: Quad, b: Quad): Quad = quadOperation((x, y) => Math.abs(x - y))(a, b)
+    def divergence(a: Quad, b: Quad): Quad = quadOperation((x, y) => square(Math.abs(x - y)))(a, b)
 
     def div(a: Quad, by: Int): Quad = (a._1 / by, a._2 / by, a._3 / by, a._4 / by)
 
